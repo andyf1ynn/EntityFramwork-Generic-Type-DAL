@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="DataEntities.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="EmailRecipients">
+          <Key>
+            <PropertyRef Name="pkEmailRecipientsID" />
+          </Key>
+          <Property Name="pkEmailRecipientsID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime" />
+          <Property Name="fkCreatedByUserID" Type="int" />
+          <Property Name="EmailAddress" Type="varchar" MaxLength="60" />
+          <Property Name="fkRecipientUserID" Type="nchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="ReportRecipients">
+          <Key>
+            <PropertyRef Name="pkReportRecipientsID" />
+          </Key>
+          <Property Name="pkReportRecipientsID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime" />
+          <Property Name="fkAddedByUserID" Type="int" />
+          <Property Name="fkEmailRecipientID" Type="int" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="fkReportID" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'Reporting.dbo.TestReportExport' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="TestReportExport">
+          <Property Name="Column1" Type="varchar" MaxLength="100" />
+          <Property Name="Column2" Type="varchar" MaxLength="100" />
+          <Property Name="Column3" Type="varchar" MaxLength="100" />
+          <Property Name="Column4" Type="varchar" MaxLength="100" />
+          <Property Name="Column5" Type="varchar" MaxLength="100" />
+        </EntityType>-->
+        <Association Name="FK_ReportRecipients_EmailRecipients">
+          <End Role="EmailRecipients" Type="Self.EmailRecipients" Multiplicity="0..1" />
+          <End Role="ReportRecipients" Type="Self.ReportRecipients" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailRecipients">
+              <PropertyRef Name="pkEmailRecipientsID" />
+            </Principal>
+            <Dependent Role="ReportRecipients">
+              <PropertyRef Name="fkEmailRecipientID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DataEntitiesStoreContainer">
+          <EntitySet Name="EmailRecipients" EntityType="Self.EmailRecipients" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReportRecipients" EntityType="Self.ReportRecipients" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_ReportRecipients_EmailRecipients" Association="Self.FK_ReportRecipients_EmailRecipients">
+            <End Role="EmailRecipients" EntitySet="EmailRecipients" />
+            <End Role="ReportRecipients" EntitySet="ReportRecipients" />
+          </AssociationSet>
+          </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DataEntities" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="EmailRecipient">
+          <Key>
+            <PropertyRef Name="pkEmailRecipientsID" />
+          </Key>
+          <Property Name="pkEmailRecipientsID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DateCreated" Type="DateTime" Precision="3" />
+          <Property Name="fkCreatedByUserID" Type="Int32" />
+          <Property Name="EmailAddress" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
+          <Property Name="fkRecipientUserID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="ReportRecipients" Relationship="Self.FK_ReportRecipients_EmailRecipients" FromRole="EmailRecipients" ToRole="ReportRecipients" />
+        </EntityType>
+        <EntityType Name="ReportRecipient">
+          <Key>
+            <PropertyRef Name="pkReportRecipientsID" />
+          </Key>
+          <Property Name="pkReportRecipientsID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DateCreated" Type="DateTime" Precision="3" />
+          <Property Name="fkAddedByUserID" Type="Int32" />
+          <Property Name="fkEmailRecipientID" Type="Int32" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="fkReportID" Type="Int32" />
+          <NavigationProperty Name="EmailRecipient" Relationship="Self.FK_ReportRecipients_EmailRecipients" FromRole="ReportRecipients" ToRole="EmailRecipients" />
+        </EntityType>
+        <Association Name="FK_ReportRecipients_EmailRecipients">
+          <End Role="EmailRecipients" Type="Self.EmailRecipient" Multiplicity="0..1" />
+          <End Role="ReportRecipients" Type="Self.ReportRecipient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailRecipients">
+              <PropertyRef Name="pkEmailRecipientsID" />
+            </Principal>
+            <Dependent Role="ReportRecipients">
+              <PropertyRef Name="fkEmailRecipientID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DataContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="EmailRecipients" EntityType="Self.EmailRecipient" />
+          <EntitySet Name="ReportRecipients" EntityType="Self.ReportRecipient" />
+          <AssociationSet Name="FK_ReportRecipients_EmailRecipients" Association="Self.FK_ReportRecipients_EmailRecipients">
+            <End Role="EmailRecipients" EntitySet="EmailRecipients" />
+            <End Role="ReportRecipients" EntitySet="ReportRecipients" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DataEntitiesStoreContainer" CdmEntityContainer="DataContext">
+          <EntitySetMapping Name="EmailRecipients">
+            <EntityTypeMapping TypeName="DataEntities.EmailRecipient">
+              <MappingFragment StoreEntitySet="EmailRecipients">
+                <ScalarProperty Name="pkEmailRecipientsID" ColumnName="pkEmailRecipientsID" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="fkCreatedByUserID" ColumnName="fkCreatedByUserID" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="fkRecipientUserID" ColumnName="fkRecipientUserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReportRecipients">
+            <EntityTypeMapping TypeName="DataEntities.ReportRecipient">
+              <MappingFragment StoreEntitySet="ReportRecipients">
+                <ScalarProperty Name="pkReportRecipientsID" ColumnName="pkReportRecipientsID" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="fkAddedByUserID" ColumnName="fkAddedByUserID" />
+                <ScalarProperty Name="fkEmailRecipientID" ColumnName="fkEmailRecipientID" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="fkReportID" ColumnName="fkReportID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
